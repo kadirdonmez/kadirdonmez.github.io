@@ -1138,6 +1138,10 @@ section {
         gap: 0.75rem;
     }
 
+    .pub-header {
+        display: none;
+    }
+
     .pub-q {
         display: inline-flex;
         align-self: flex-start;
