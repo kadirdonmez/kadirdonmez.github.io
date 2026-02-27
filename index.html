@@ -46,6 +46,9 @@
     }
     </script>
 
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
     <link rel="stylesheet" href="styles/main.css">
 </head>
 
@@ -119,14 +122,14 @@
             <div class="bento-grid">
                 <div class="bento-card card-large">
                     <span class="label">Research Focus</span>
-                    <h3>Aviation <i>Operations</i> Research</h3>
-                    <p>I am an Associate Professor and Vice Dean at the Özdemir Bayraktar Faculty of
-                        Aeronautics and Astronautics, Samsun University. My research focuses on air traffic management,
-                        airport ground operations, runway scheduling, stochastic optimization, and machine learning
-                        applications in aviation.</p>
-                    <p class="divider-top">My work spans multi-objective stochastic programming, decision support
-                        systems for air traffic controllers, human factors analysis, and sustainability-oriented
-                        aviation operations.</p>
+                    <h3>What I <i>Work</i> On</h3>
+                    <p>My research develops optimization and data-driven decision support tools for
+                        real-world aviation operations — from runway scheduling under uncertainty to
+                        airport ground conflict detection using ADS-B surveillance data.</p>
+                    <p class="divider-top">Core methodologies include multi-objective stochastic programming,
+                        matheuristic algorithms, deep learning for predictive maintenance, and human factors
+                        analysis (HFACS). I aim to bridge the gap between theoretical models and
+                        operationally deployable solutions for air traffic controllers and airport managers.</p>
                 </div>
 
                 <div class="bento-card">
@@ -355,6 +358,7 @@
                 <button class="pub-tab active" data-target="journals">Journals (27)</button>
                 <button class="pub-tab" data-target="proceedings">Proceedings (13)</button>
                 <button class="pub-tab" data-target="books">Books & Others</button>
+                <button class="pub-tab" data-target="analysis">📊 Analysis & Graphs</button>
             </div>
 
             <!-- Journal Articles -->
@@ -786,6 +790,90 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Analysis & Graphs -->
+            <div id="analysis" class="pub-panel">
+                <!-- Citation Metrics -->
+                <div class="metrics-row">
+                    <div class="metric-card">
+                        <span class="metric-source">Google Scholar</span>
+                        <span class="metric-number">325</span>
+                        <span class="metric-label">Total Citations</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-source">Google Scholar</span>
+                        <span class="metric-number">11</span>
+                        <span class="metric-label">h-index</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-source">Google Scholar</span>
+                        <span class="metric-number">12</span>
+                        <span class="metric-label">i10-index</span>
+                    </div>
+                </div>
+                <p class="metrics-note">Citation data last updated: February 2026</p>
+
+                <!-- Charts Grid -->
+                <div class="analysis-grid">
+                    <div class="chart-card">
+                        <h4>Publications per Year</h4>
+                        <p class="chart-desc">Journal articles vs conference proceedings by year</p>
+                        <div class="chart-wrapper"><canvas id="chartPubYear"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <h4>Scopus Quartile Distribution</h4>
+                        <p class="chart-desc">Journal articles only (excl. proceedings)</p>
+                        <div class="chart-wrapper"><canvas id="chartQDist"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <h4>Top Journals</h4>
+                        <p class="chart-desc">Most frequent publication venues</p>
+                        <div class="chart-wrapper"><canvas id="chartTopJournals"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <h4>Citation Trend</h4>
+                        <p class="chart-desc">Yearly citations from Google Scholar</p>
+                        <div class="chart-wrapper"><canvas id="chartCitations"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <h4>Cumulative Publication Growth</h4>
+                        <p class="chart-desc">Total publications over time</p>
+                        <div class="chart-wrapper"><canvas id="chartCumulative"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <h4>Publication Type Breakdown</h4>
+                        <p class="chart-desc">Distribution across publication categories</p>
+                        <div class="chart-wrapper"><canvas id="chartTypeDist"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- Project Analytics Divider -->
+                <div class="analysis-divider">
+                    <h3>📂 Project Analytics</h3>
+                    <p class="chart-desc">Funding, budget, and role distribution across 9 research projects</p>
+                </div>
+
+                <div class="project-charts-row">
+                    <div class="project-charts-col-stacked">
+                        <div class="chart-card">
+                            <h4>Funding Source Distribution</h4>
+                            <p class="chart-desc">Projects by funding body</p>
+                            <div class="chart-wrapper"><canvas id="chartFundingSource"></canvas></div>
+                        </div>
+                        <div class="chart-card">
+                            <h4>Role Distribution in Projects</h4>
+                            <p class="chart-desc">PI / Researcher / Scholar breakdown</p>
+                            <div class="chart-wrapper"><canvas id="chartProjectRoles"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="chart-card project-budget-card">
+                        <h4>Project Budget Overview</h4>
+                        <p class="chart-desc">Budget allocation per project</p>
+                        <div class="chart-wrapper"><canvas id="chartProjectBudget"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </section>
 
