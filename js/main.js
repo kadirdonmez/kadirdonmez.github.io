@@ -571,7 +571,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     maintainAspectRatio: false,
                     cutout: '55%',
                     plugins: {
-                        legend: { position: 'bottom' },
+                        legend: { display: false },
                         tooltip: {
                             callbacks: {
                                 label: function (ctx) {
@@ -689,7 +689,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     maintainAspectRatio: false,
                     cutout: '55%',
                     plugins: {
-                        legend: { position: 'bottom' },
+                        legend: { display: false },
                         tooltip: {
                             callbacks: {
                                 label: function (ctx) {
