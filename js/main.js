@@ -704,6 +704,47 @@ document.addEventListener('DOMContentLoaded', () => {
             }));
         }
 
+        // ==============================
+        // 10. Authorship Distribution — Doughnut
+        // ==============================
+        const ctxAuth = document.getElementById('chartAuthorship');
+        if (ctxAuth) {
+            chartInstances.push(new Chart(ctxAuth.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Sole Author', 'First Author', 'Co-Author'],
+                    datasets: [{
+                        data: [11, 15, 14],
+                        backgroundColor: [
+                            'rgba(139,92,246,0.85)',
+                            `rgba(${accentRGB}, 0.85)`,
+                            'rgba(16,185,129,0.85)',
+                        ],
+                        borderColor: C.bg,
+                        borderWidth: 3,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '55%',
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function (ctx) {
+                                    const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                    const pct = ((ctx.parsed / total) * 100).toFixed(1);
+                                    return ` ${ctx.label}: ${ctx.parsed} papers (${pct}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            }));
+        }
+
         chartsInitialized = true;
     }
 
