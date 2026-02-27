@@ -813,17 +813,12 @@
                 </div>
                 <p class="metrics-note">Citation data last updated: February 2026</p>
 
-                <!-- Charts Grid -->
+                <!-- Charts Grid — Large Charts (2-col) -->
                 <div class="analysis-grid">
                     <div class="chart-card">
                         <h4>Publications per Year</h4>
                         <p class="chart-desc">Journal articles vs conference proceedings by year</p>
                         <div class="chart-wrapper"><canvas id="chartPubYear"></canvas></div>
-                    </div>
-                    <div class="chart-card">
-                        <h4>Scopus Quartile Distribution</h4>
-                        <p class="chart-desc">Journal articles only (excl. proceedings)</p>
-                        <div class="chart-wrapper"><canvas id="chartQDist"></canvas></div>
                     </div>
                     <div class="chart-card">
                         <h4>Top Journals</h4>
@@ -840,10 +835,24 @@
                         <p class="chart-desc">Total publications over time</p>
                         <div class="chart-wrapper"><canvas id="chartCumulative"></canvas></div>
                     </div>
+                </div>
+
+                <!-- Doughnut Charts Row (3-col) -->
+                <div class="analysis-grid-3">
+                    <div class="chart-card">
+                        <h4>Scopus Quartile Distribution</h4>
+                        <p class="chart-desc">Journal articles only (excl. proceedings)</p>
+                        <div class="chart-wrapper"><canvas id="chartQDist"></canvas></div>
+                    </div>
                     <div class="chart-card">
                         <h4>Publication Type Breakdown</h4>
                         <p class="chart-desc">Distribution across publication categories</p>
                         <div class="chart-wrapper"><canvas id="chartTypeDist"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <h4>Authorship Distribution</h4>
+                        <p class="chart-desc">Sole author, first author & co-author ratio</p>
+                        <div class="chart-wrapper"><canvas id="chartAuthorship"></canvas></div>
                     </div>
                 </div>
 
@@ -857,12 +866,20 @@
                     <div class="project-charts-col-stacked">
                         <div class="chart-card">
                             <h4>Funding Source Distribution</h4>
-                            <p class="chart-desc">Projects by funding body</p>
+                            <div class="chart-legend-inline">
+                                <span><i style="background:rgba(251,146,60,0.85)"></i>TÜBİTAK (4)</span>
+                                <span><i style="background:rgba(79,138,247,0.85)"></i>EU Funded (1)</span>
+                                <span><i style="background:rgba(16,185,129,0.85)"></i>University (4)</span>
+                            </div>
                             <div class="chart-wrapper"><canvas id="chartFundingSource"></canvas></div>
                         </div>
                         <div class="chart-card">
                             <h4>Role Distribution in Projects</h4>
-                            <p class="chart-desc">PI / Researcher / Scholar breakdown</p>
+                            <div class="chart-legend-inline">
+                                <span><i style="background:rgba(139,92,246,0.85)"></i>PI (1)</span>
+                                <span><i style="background:rgba(79,138,247,0.85)"></i>Researcher (7)</span>
+                                <span><i style="background:rgba(251,191,36,0.85)"></i>Scholar (1)</span>
+                            </div>
                             <div class="chart-wrapper"><canvas id="chartProjectRoles"></canvas></div>
                         </div>
                     </div>
