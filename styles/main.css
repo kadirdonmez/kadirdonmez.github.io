@@ -1439,18 +1439,25 @@ section {
 .project-charts-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    gap: 1rem;
     align-items: stretch;
+    max-height: 420px;
 }
 
 .project-charts-col-stacked {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
+}
+
+.project-charts-col-stacked .chart-card {
+    flex: 1;
+    min-height: 0;
 }
 
 .project-charts-col-stacked .chart-wrapper {
-    min-height: 180px;
+    min-height: 0;
+    height: 140px;
 }
 
 .project-budget-card {
@@ -1460,7 +1467,8 @@ section {
 
 .project-budget-card .chart-wrapper {
     flex: 1;
-    min-height: 340px;
+    min-height: 0;
+    max-height: 380px;
 }
 
 .analysis-grid {
