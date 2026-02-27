@@ -1453,11 +1453,27 @@ section {
 .project-charts-col-stacked .chart-card {
     flex: 1;
     min-height: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+}
+
+.project-charts-col-stacked .chart-card h4,
+.project-charts-col-stacked .chart-card .chart-desc {
+    text-align: left;
+}
+
+.project-charts-col-stacked .chart-card h4 {
+    font-size: 1.1rem;
+    margin-bottom: 0.15rem;
 }
 
 .project-charts-col-stacked .chart-wrapper {
     min-height: 0;
-    height: 140px;
+    height: 170px;
+    width: 200px;
+    flex-shrink: 0;
 }
 
 .project-budget-card {
