@@ -27,7 +27,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
     <!-- Structured Data -->
@@ -50,10 +50,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-    <link rel="stylesheet" href="styles/main.css?v=4">
+    <link rel="stylesheet" href="styles/main.css?v=6">
 </head>
 
-<body data-theme="dark">
+<body data-theme="light">
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress" id="scrollProgress" style="width: 0%;"></div>
+
     <!-- Header / Nav Pill -->
     <header class="header">
         <nav class="nav-pill">
@@ -69,9 +72,9 @@
                 <a href="#courses">Courses</a>
                 <a href="#awards">Awards</a>
                 <a href="#labs">Labs</a>
+                <a href="#news">News</a>
             </div>
             <a class="btn primary" href="#contact">Contact</a>
-            <button id="themeBtn" class="btn-theme" aria-label="Toggle theme">Theme</button>
             <button id="menuBtn" class="menu-btn" aria-label="Open menu">☰</button>
         </nav>
     </header>
@@ -88,12 +91,17 @@
             <a href="#courses">Courses</a>
             <a href="#awards">Awards</a>
             <a href="#labs">Labs</a>
+            <a href="#news">News</a>
             <a href="#contact">Contact</a>
         </div>
     </div>
 
     <!-- Hero Section -->
     <main id="top" class="hero">
+        <div class="hero-bg">
+            <img src="photos/hero-bg-light.png" alt="" aria-hidden="true">
+        </div>
+        <canvas id="hero-particles"></canvas>
         <div class="container">
             <div class="hero-profile reveal" style="animation-delay: 0.05s">
                 <img src="photos/kadir.jpg" class="hero-avatar" alt="Kadir Dönmez">
@@ -116,7 +124,19 @@
                 </div>
             </div>
         </div>
+        <div class="scroll-indicator">
+            <span>Scroll</span>
+            <div class="scroll-indicator-line"></div>
+        </div>
     </main>
+
+    <!-- Divider -->
+    <div class="container">
+        <div class="section-divider">
+            <div class="section-divider-line"></div><span class="section-divider-icon">✦</span>
+            <div class="section-divider-line"></div>
+        </div>
+    </div>
 
     <!-- About Section -->
     <section id="about">
@@ -131,28 +151,67 @@
                 <div class="bento-card" style="grid-column: 1 / -1;">
                     <span class="label">Biography</span>
                     <h3>Academic & Professional <i>Biography</i></h3>
-                    <p>I earned my Bachelor’s degree in Aircraft Avionics Maintenance from Kocaeli University in 2015, gaining foundational knowledge in avionics systems. In 2016, I began a Master’s in Air Traffic Control (ATC) at Anadolu University, researching how organizational practices affect aviation incidents. This work underscored the impact of operational and management factors on safety, earning me the Master’s Thesis Success Award (best MS thesis). From 2017–2018, as a Research Assistant at Anadolu University, I contributed to academic and national ATM projects, expanding my expertise.</p>
-                    <p>In 2018, I began a Ph.D. in Air Traffic Control at Eskişehir Technical University. My doctoral research developed multi-objective stochastic optimization models for multi-runway airports, addressing wind uncertainties and taxi-time variability—improving fuel efficiency, punctuality, performance, and emissions. I received the Article Performance Award for high-impact publications. From 2018–2022, I served as a Research Assistant and participated in the Erasmus+ ATCOSIMA project, which established standardized ATC simulation training criteria for Pan-European Single Sky objectives. My role involved designing metrics, running simulations, analyzing data, and co-authoring papers with international partners.</p>
-                    <p>Alongside research, I spent six years as a pseudo-pilot in ATCo training, simulating multiple ATC positions (Aerodrome Control, Radar Approach/Area Control, Coordination, Procedural Control), providing hands-on insights into ATM operations.</p>
-                    <p>In 2023, I was appointed Head of the Aircraft Maintenance Department at Samsun University, overseeing course scheduling, Civil Aviation Regulation compliance, and internship/OJT collaborations. In 2024, I became an Associate Professor of Aircraft, Aeronautics, and Aerospace Engineering (Inter-University Council of Türkiye) and received a Certificate of Appreciation from the Rector of Samsun University for advancing aviation education, research, and the university’s reputation in aviation and space sciences.</p>
-                    <p>I have been actively teaching for two years, delivering a range of undergraduate and graduate courses. These include Basic Aircraft Knowledge and Basic Aerodynamics for undergraduate students in the Department of Aircraft Maintenance, as well as Aerospace Instruments for students in Aeronautics and Astronautics Engineering. It offers students a comprehensive understanding of working principles of instruments. At the graduate level, I teach Optimization Techniques in Engineering, guiding students through nearly 50 optimization problems, model formulation, Python coding, and solution analysis. In 2023, I mentored my first Master’s student on terminal airspace complexity using multi-criteria decision-making tools.</p>
-                    <p>I serve on the University Education Commission and the Strategic Planning Commission, shaping educational strategies and long-term goals. I also mentor several student teams. Throughout my professional career, I have been actively involved in various research and development projects, including those funded by TÜBİTAK, serving as a project coordinator, advisor, and expert. Additionally, I currently provide project-based consultancy services to a company in the defense industry.</p>
-                    <p>My publication record features 43 works (29 journal papers, 13 conference proceedings, and 1 book chapter). Of these, 22 are Q1/Q2 indexed papers (10 in Q1, 12 in Q2).</p>
-                    <p>In my courses and research, I use a variety of technologies and tools. My expertise includes coding optimization models with GAMS and Pyomo, focusing on Linear, Multi-Objective, and Stochastic Programming, as well as Metaheuristics and Matheuristics. I have practical experience with MICRONAV BEST for real-time ATC simulations, SIMMOD PRO for fast-time ATC simulations, and I am integrating machine learning techniques into my research.</p>
-                    <p>Between June and September 2025, I spent four months at Nanyang Technological University (NTU) in Singapore as a Research Fellow, where I had the opportunity to observe and work on next-generation airside operations and intelligent decision support systems for airport surface movement.</p>
+                    <div class="bio-content">
+                        <p>I earned my Bachelor’s degree in Aircraft Avionics Maintenance from Kocaeli University in
+                            2015, gaining foundational knowledge in avionics systems. In 2016, I began a Master’s in Air
+                            Traffic Control (ATC) at Anadolu University, researching how organizational practices affect
+                            aviation incidents. This work underscored the impact of operational and management factors
+                            on safety, earning me the Master’s Thesis Success Award (best MS thesis). From 2017–2018, as
+                            a Research Assistant at Anadolu University, I contributed to academic and national ATM
+                            projects, expanding my expertise.</p>
+
+                        <div class="bio-more" style="display: none;">
+                            <p>In 2018, I began a Ph.D. in Air Traffic Control at Eskişehir Technical University. My
+                                doctoral research developed multi-objective stochastic optimization models for
+                                multi-runway airports, addressing wind uncertainties and taxi-time variability—improving
+                                fuel efficiency, punctuality, performance, and emissions. I received the Article
+                                Performance Award for high-impact publications. From 2018–2022, I served as a Research
+                                Assistant and participated in the Erasmus+ ATCOSIMA project, which established
+                                standardized ATC simulation training criteria for Pan-European Single Sky objectives. My
+                                role involved designing metrics, running simulations, analyzing data, and co-authoring
+                                papers with international partners.</p>
+                            <p>Alongside research, I spent six years as a pseudo-pilot in ATCo training, simulating
+                                multiple ATC positions (Aerodrome Control, Radar Approach/Area Control, Coordination,
+                                Procedural Control), providing hands-on insights into ATM operations.</p>
+                            <p>In 2023, I was appointed Head of the Aircraft Maintenance Department at Samsun
+                                University, overseeing course scheduling, Civil Aviation Regulation compliance, and
+                                internship/OJT collaborations. In 2024, I became an Associate Professor of Aircraft,
+                                Aeronautics, and Aerospace Engineering (Inter-University Council of Türkiye) and
+                                received a Certificate of Appreciation from the Rector of Samsun University for
+                                advancing aviation education, research, and the university’s reputation in aviation and
+                                space sciences.</p>
+                            <p>Since 2022, I have been actively teaching a range of undergraduate and graduate
+                                courses. These include Basic Aircraft Knowledge and Basic Aerodynamics for
+                                undergraduate students in the Department of Aircraft Maintenance, as well as Aerospace
+                                Instruments for students in Aeronautics and Astronautics Engineering. It offers students
+                                a comprehensive understanding of working principles of instruments. At the graduate
+                                level, I teach Optimization Techniques in Engineering, guiding students through nearly
+                                50 optimization problems, model formulation, Python coding, and solution analysis. In
+                                2023, I mentored my first Master’s student on terminal airspace complexity using
+                                multi-criteria decision-making tools.</p>
+                            <p>In October 2025, I was appointed Vice Dean of the Faculty of Aeronautics and
+                                Astronautics. I serve on the University Education Commission and the Strategic Planning
+                                Commission, shaping educational strategies and long-term goals. I also mentor several
+                                development projects, including those funded by TÜBİTAK, serving as a project
+                                coordinator, advisor, and expert. Additionally, I currently provide project-based
+                                consultancy services to a company in the defense industry.</p>
+                            <p>My publication record features 43 works (29 journal papers, 13 conference proceedings,
+                                and 1 book chapter). Of these, 22 are Q1/Q2 indexed papers (10 in Q1, 12 in Q2).</p>
+                            <p>In my courses and research, I use a variety of technologies and tools. My expertise
+                                includes coding optimization models with GAMS and Pyomo, focusing on Linear,
+                                Multi-Objective, and Stochastic Programming, as well as Metaheuristics and
+                                Matheuristics. I have practical experience with MICRONAV BEST for real-time ATC
+                                simulations, SIMMOD PRO for fast-time ATC simulations, and I am integrating machine
+                                learning techniques into my research.</p>
+                            <p>Between June and September 2025, I spent four months at Nanyang Technological University
+                                (NTU) in Singapore as a Research Fellow, where I had the opportunity to observe and work
+                                on next-generation airside operations and intelligent decision support systems for
+                                airport surface movement.</p>
+                        </div>
+                        <button class="read-more-btn" onclick="toggleBio(this)">Read More ▼</button>
+                    </div>
                 </div>
 
-                <div class="bento-card card-large">
-                    <span class="label">Research Focus</span>
-                    <h3>What I <i>Work</i> On</h3>
-                    <p>My research develops optimization and data-driven decision support tools for
-                        real-world aviation operations — from runway scheduling under uncertainty to
-                        airport ground conflict detection using ADS-B surveillance data.</p>
-                    <p class="divider-top">Core methodologies include multi-objective stochastic programming,
-                        matheuristic algorithms, deep learning for predictive maintenance, and human factors
-                        analysis (HFACS). I aim to bridge the gap between theoretical models and
-                        operationally deployable solutions for air traffic controllers and airport managers.</p>
-                </div>
 
                 <div class="bento-card">
                     <span class="label">Contact</span>
@@ -197,6 +256,14 @@
         </div>
     </section>
 
+    <!-- Divider -->
+    <div class="container">
+        <div class="section-divider">
+            <div class="section-divider-line"></div><span class="section-divider-icon">✈</span>
+            <div class="section-divider-line"></div>
+        </div>
+    </div>
+
     <!-- Education Section -->
     <section id="education">
         <div class="container">
@@ -239,6 +306,14 @@
             </div>
         </div>
     </section>
+
+    <!-- Divider -->
+    <div class="container">
+        <div class="section-divider">
+            <div class="section-divider-line"></div><span class="section-divider-icon">◆</span>
+            <div class="section-divider-line"></div>
+        </div>
+    </div>
 
     <!-- Positions Section -->
     <section id="positions">
@@ -368,6 +443,14 @@
         </div>
     </section>
 
+    <!-- Divider -->
+    <div class="container">
+        <div class="section-divider">
+            <div class="section-divider-line"></div><span class="section-divider-icon">✦</span>
+            <div class="section-divider-line"></div>
+        </div>
+    </div>
+
     <!-- Papers Section -->
     <section id="papers">
         <div class="container">
@@ -433,15 +516,16 @@
                                 benchmarking for explainable and efficient aircraft departure sequencing.
                                 <em>The Aeronautical Journal</em>, 1-26.
                             </p>
-                            <a href="https://doi.org/10.1017/aer.2026.10146" class="doi-link"
-                                target="_blank">DOI</a>
+                            <a href="https://doi.org/10.1017/aer.2026.10146" class="doi-link" target="_blank">DOI</a>
                         </div>
                         <span class="pub-q">Q2</span>
                     </li>
                     <li class="pub-item">
                         <span class="pub-year">2026</span>
                         <div class="pub-content">
-                            <p>Kilic U., Aygun H., Kirmizi M., <strong>Dönmez K.</strong>, Sahin O. (2026). Performance searching of an experimental micro turbojet engine via modeling-based optimization approaches. <em>Journal of Thermal Analysis and Calorimetry</em>, 1-15.</p>
+                            <p>Kilic U., Aygun H., Kirmizi M., <strong>Dönmez K.</strong>, Sahin O. (2026). Performance
+                                searching of an experimental micro turbojet engine via modeling-based optimization
+                                approaches. <em>Journal of Thermal Analysis and Calorimetry</em>, 1-15.</p>
                             <a href="https://doi.org/10.1007/s10973-026-15635-9" class="doi-link"
                                 target="_blank">DOI</a>
                         </div>
@@ -707,6 +791,7 @@
                     <li class="pub-item">
                         <span class="pub-year">2025</span>
                         <div class="pub-content">
+                            <span class="selected-badge">Selected Work</span>
                             <p>Aygün H., <strong>Dönmez K.</strong>, Dursun Ö.O., Toraman S., Şahin O. (2025).
                                 Validating and modeling of metrics of micro turbojet engine by experimental and ML
                                 methods. <em>ICPIS 2025</em>, 250-260.</p>
@@ -715,6 +800,7 @@
                     <li class="pub-item">
                         <span class="pub-year">2024</span>
                         <div class="pub-content">
+                            <span class="selected-badge">Selected Work</span>
                             <p><strong>Dönmez K.</strong> (2024). Airport Ground Optimizer (AGO). <em>SESAR Innovation
                                     Days 2024</em>. (Poster)</p>
                         </div>
@@ -843,19 +929,26 @@
                         <span class="metric-source">Google Scholar</span>
                         <span class="metric-number">386</span>
                         <span class="metric-label">Total Citations</span>
-                        <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.4rem; display:flex; gap:8px;">
-                            <span>h-index: 11</span> | <span>i10-index: 12</span>
+                        <div
+                            style="font-size:0.75rem; color:var(--text-muted); margin-top:0.4rem; display:flex; gap:8px;">
+                            <span>h-index: 12</span> | <span>i10-index: 12</span>
                         </div>
                     </div>
                     <div class="metric-card">
                         <span class="metric-source">Scopus</span>
                         <span class="metric-number">190</span>
                         <span class="metric-label">Total Citations</span>
+                        <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.4rem;">
+                            <span>h-index: 7</span>
+                        </div>
                     </div>
                     <div class="metric-card">
                         <span class="metric-source">Web of Science</span>
                         <span class="metric-number">154</span>
                         <span class="metric-label">Total Citations</span>
+                        <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.4rem;">
+                            <span>h-index: 7</span>
+                        </div>
                     </div>
                 </div>
                 <p class="metrics-note">Citation data last updated: July 2026</p>
@@ -942,6 +1035,14 @@
         </div>
     </section>
 
+    <!-- Divider -->
+    <div class="container">
+        <div class="section-divider">
+            <div class="section-divider-line"></div><span class="section-divider-icon">✈</span>
+            <div class="section-divider-line"></div>
+        </div>
+    </div>
+
     <!-- Projects Section -->
     <section id="projects">
         <div class="container">
@@ -954,9 +1055,11 @@
                 <div class="bento-card card-medium">
                     <span class="label">TÜBİTAK 4004 · 2026</span>
                     <h3>Discover Air Traffic Management: Hands-on Air Traffic Control Simulation Program</h3>
-                    <p>Project Expert — Coordinator: Dr. Mustafa Özdemir. With Öznur Usanmaz, Nuray Gedik, Özlem Şahin, and Mehmet Ali Işıkoğlu.</p>
+                    <p>Project Expert — Coordinator: Dr. Mustafa Özdemir. With Öznur Usanmaz, Nuray Gedik, Özlem Şahin,
+                        and Mehmet Ali Işıkoğlu.</p>
                     <div style="margin-top: 1rem;">
-                        <a href="https://4000.tubitak.gov.tr/4004/225b949" class="doi-link" target="_blank">Project Link</a>
+                        <a href="https://4000.tubitak.gov.tr/4004/225b949" class="doi-link" target="_blank">Project
+                            Link</a>
                     </div>
                 </div>
 
@@ -1031,6 +1134,14 @@
         </div>
     </section>
 
+    <!-- Divider -->
+    <div class="container">
+        <div class="section-divider">
+            <div class="section-divider-line"></div><span class="section-divider-icon">◆</span>
+            <div class="section-divider-line"></div>
+        </div>
+    </div>
+
     <!-- Courses Section -->
     <section id="courses">
         <div class="container">
@@ -1072,6 +1183,14 @@
             </div>
         </div>
     </section>
+
+    <!-- Divider -->
+    <div class="container">
+        <div class="section-divider">
+            <div class="section-divider-line"></div><span class="section-divider-icon">★</span>
+            <div class="section-divider-line"></div>
+        </div>
+    </div>
 
     <!-- Awards Section -->
     <section id="awards">
@@ -1214,14 +1333,33 @@
             <div class="footer-flex">
                 <div>
                     <h3 class="footer-brand">KADİR DÖNMEZ</h3>
-                    <p class="footer-text">© <span id="year">2026</span> Assoc. Prof. Kadir Dönmez — Samsun
-                        University</p>
+                    <p class="footer-text">© <span id="year">2026</span> Assoc. Prof. Kadir Dönmez — Samsun University
+                    </p>
                     <p class="footer-text" style="margin-top: 0.5rem;">
                         <a href="mailto:kadir.donmez@samsun.edu.tr"
-                            style="color: var(--text-muted); text-decoration: none;">
-                            ✉️ kadir.donmez@samsun.edu.tr
-                        </a>
+                            style="color: var(--text-muted); text-decoration: none;">✉️ kadir.donmez@samsun.edu.tr</a>
                     </p>
+                    <div class="footer-stats">
+                        <div class="footer-stat">
+                            <span class="footer-stat-number">43</span>
+                            <span class="footer-stat-label">Publications</span>
+                        </div>
+                        <div class="footer-stat">
+                            <span class="footer-stat-number">386</span>
+                            <span class="footer-stat-label">Citations</span>
+                        </div>
+                        <div class="footer-stat">
+                            <span class="footer-stat-number">10</span>
+                            <span class="footer-stat-label">Projects</span>
+                        </div>
+                        <div class="footer-stat">
+                            <span class="footer-stat-number">22</span>
+                            <span class="footer-stat-label">Q1/Q2 Papers</span>
+                        </div>
+                    </div>
+                    <button class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+                        ↑ Back to Top
+                    </button>
                 </div>
                 <div class="menu">
                     <a href="#about">About</a>
@@ -1240,7 +1378,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="js/main.js?v=4"></script>
+    <script src="js/main.js?v=9"></script>
     <script src="js/cv-generator.js?v=2"></script>
 </body>
 
