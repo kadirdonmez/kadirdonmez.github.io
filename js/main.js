@@ -1,3 +1,104 @@
+// ============================================================
+// PREMIUM INTERACTIONS — Kadir Dönmez Academic Portfolio
+// Particles, Scroll Progress, Counters, Card Effects
+// ============================================================
+
+// ---- Hero Particle System ----
+function initParticles() {
+    const canvas = document.getElementById('hero-particles');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let animFrame;
+
+    function resize() {
+        const hero = canvas.parentElement;
+        canvas.width = hero.offsetWidth;
+        canvas.height = hero.offsetHeight;
+    }
+
+    function createParticle() {
+        return {
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 2 + 0.5,
+            speedX: (Math.random() - 0.5) * 0.3,
+            speedY: (Math.random() - 0.5) * 0.2 - 0.1,
+            opacity: Math.random() * 0.5 + 0.1,
+            pulse: Math.random() * Math.PI * 2,
+            pulseSpeed: Math.random() * 0.02 + 0.005
+        };
+    }
+
+    function init() {
+        resize();
+        const count = Math.min(Math.floor(canvas.width * canvas.height / 12000), 80);
+        particles = [];
+        for (let i = 0; i < count; i++) particles.push(createParticle());
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach(p => {
+            p.x += p.speedX;
+            p.y += p.speedY;
+            p.pulse += p.pulseSpeed;
+
+            if (p.x < 0) p.x = canvas.width;
+            if (p.x > canvas.width) p.x = 0;
+            if (p.y < 0) p.y = canvas.height;
+            if (p.y > canvas.height) p.y = 0;
+
+            const glow = (Math.sin(p.pulse) + 1) / 2;
+            const alpha = p.opacity * (0.5 + glow * 0.5);
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(79, 138, 247, ${alpha})`;
+            ctx.fill();
+
+            if (p.size > 1.2) {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(79, 138, 247, ${alpha * 0.08})`;
+                ctx.fill();
+            }
+        });
+
+        // Connecting lines
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 120) {
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.strokeStyle = `rgba(79, 138, 247, ${(1 - dist / 120) * 0.06})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        animFrame = requestAnimationFrame(draw);
+    }
+
+    init();
+    draw();
+    window.addEventListener('resize', init);
+
+    const heroObs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (e.isIntersecting) { if (!animFrame) draw(); }
+            else { cancelAnimationFrame(animFrame); animFrame = null; }
+        });
+    }, { threshold: 0 });
+    heroObs.observe(canvas.parentElement);
+}
+
 // Stagger Entrance Helper
 function applyStagger(selector, staggerDelay = 40) {
     const elements = document.querySelectorAll(selector);
@@ -17,9 +118,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Stagger Preparation (Ultra-Snappy)
     applyStagger('.bento-card', 15);
     applyStagger('.timeline-item', 15);
-    applyStagger('.pub-item', 10); // Minimal delay for papers
+    applyStagger('.pub-item', 10);
 
-    // Navigation - Scroll Spy
+    // Init Particles
+    initParticles();
+
+    // ---- Scroll Progress Bar ----
+    const scrollProgress = document.getElementById('scrollProgress');
     const navLinks = document.querySelectorAll('.menu a');
     const sections = document.querySelectorAll('section');
 
@@ -40,9 +145,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    window.addEventListener('scroll', updateNav);
+    // Combined scroll handler
+    function onScroll() {
+        updateNav();
+        // Update scroll progress
+        if (scrollProgress) {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+            scrollProgress.style.width = progress + '%';
+        }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', updateNav);
-    updateNav(); // Init
+    updateNav();
+    onScroll();
 
     // Magnetic Button Effect
     const magneticBtn = document.querySelector('.hero-btn');
@@ -66,18 +184,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Theme Management
-    const savedTheme = localStorage.getItem("kd_theme");
-    if (savedTheme) {
-        body.setAttribute("data-theme", savedTheme);
-    }
-
+    body.setAttribute("data-theme", "light");
+    localStorage.setItem("kd_theme", "light");
     if (themeBtn) {
-        themeBtn.addEventListener("click", () => {
-            const currentTheme = document.body.getAttribute("data-theme") || "dark";
-            const newTheme = currentTheme === "dark" ? "light" : "dark";
-            document.body.setAttribute("data-theme", newTheme);
-            localStorage.setItem("kd_theme", newTheme);
-        });
+        themeBtn.remove();
     }
 
     // Mobile Menu Toggle
@@ -116,9 +226,354 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function syncProjectContent() {
+        const projectCards = Array.from(document.querySelectorAll('#projects .bento-card'));
+
+        projectCards.forEach(card => {
+            const title = card.querySelector('h3')?.textContent?.trim() || '';
+            const label = card.querySelector('.label');
+            const description = card.querySelector('p');
+            let budget = card.querySelector('.project-budget');
+
+            if (title === 'Discover Air Traffic Management: Hands-on Air Traffic Control Simulation Program') {
+                if (!budget) {
+                    budget = document.createElement('div');
+                    budget.className = 'project-budget';
+                    card.appendChild(budget);
+                }
+                budget.textContent = '450.000 TL';
+            }
+
+            if (title === 'UAV-Assisted Deep Learning for Multi-Damage Detection in Aircraft') {
+                if (label) {
+                    label.textContent = 'TUBITAK 1002 - 2025-2026';
+                }
+                if (description) {
+                    description.textContent = 'PI: Kadir Donmez - with Suat Toraman, Hakan Aygun, Omer Osman Dursun. Apr 2025 - 2026.';
+                }
+            }
+        });
+    }
+    syncProjectContent();
+
+    function syncAcademicProfileContent() {
+        const bioParagraphs = document.querySelectorAll('#about .bio-more p');
+        if (bioParagraphs.length >= 6) {
+            bioParagraphs[3].textContent = "Since 2022, I have been actively teaching a range of undergraduate and graduate courses. These include Basic Aircraft Knowledge and Basic Aerodynamics for undergraduate students in the Department of Aircraft Maintenance, as well as Aerospace Instruments for students in Aeronautics and Astronautics Engineering. It offers students a comprehensive understanding of working principles of instruments. At the graduate level, I teach Optimization Techniques in Engineering, guiding students through nearly 50 optimization problems, model formulation, Python coding, and solution analysis. In 2023, I mentored my first Master's student on terminal airspace complexity using multi-criteria decision-making tools.";
+            bioParagraphs[4].textContent = "In October 2025, I was appointed Vice Dean of the Faculty of Aeronautics and Astronautics. I serve on the University Education Commission and the Strategic Planning Commission, shaping educational strategies and long-term goals. I also mentor several student teams and frequently serve as a jury member in numerous M.Sc. and Ph.D. thesis defenses.";
+            bioParagraphs[5].textContent = "Throughout my professional career, I have been actively involved in various research and development projects, including those funded by the EU, TUBITAK, and university programs, serving as a project coordinator, advisor, and expert. Additionally, I currently provide project-based consultancy services to a company in the defense industry.";
+        }
+
+        const bioMore = document.querySelector('#about .bio-more');
+        const publicationParagraph = Array.from(document.querySelectorAll('#about .bio-more p')).find(p => p.textContent.includes('As of July 2026') || p.textContent.includes('My publication record features'));
+        if (publicationParagraph) {
+            publicationParagraph.textContent = "As of July 2026, my publication record features 43 works (29 journal papers, 13 conference proceedings, and 1 book chapter). Of these, 22 are Q1/Q2 indexed papers (10 in Q1, 12 in Q2).";
+        } else if (bioMore) {
+            const techParagraph = Array.from(bioMore.querySelectorAll('p')).find(p => p.textContent.includes('In my courses and research'));
+            const newPublicationParagraph = document.createElement('p');
+            newPublicationParagraph.textContent = "As of July 2026, my publication record features 43 works (29 journal papers, 13 conference proceedings, and 1 book chapter). Of these, 22 are Q1/Q2 indexed papers (10 in Q1, 12 in Q2).";
+            if (techParagraph) {
+                techParagraph.insertAdjacentElement('beforebegin', newPublicationParagraph);
+            } else {
+                bioMore.appendChild(newPublicationParagraph);
+            }
+        }
+
+        const adminRolesCard = Array.from(document.querySelectorAll('#positions .bento-card')).find(card => card.querySelector('h3')?.textContent.includes('Service'));
+        if (adminRolesCard) {
+            const firstDate = adminRolesCard.querySelector('.position-list .position-entry .position-date');
+            if (firstDate) {
+                firstDate.textContent = 'Oct 2025 - Present';
+            }
+
+            if (!adminRolesCard.querySelector('.jury-service-block')) {
+                const supervisedBlock = adminRolesCard.querySelectorAll('.divider-top')[0];
+                if (supervisedBlock) {
+                    const juryBlock = document.createElement('div');
+                    juryBlock.className = 'divider-top jury-service-block';
+                    juryBlock.innerHTML = `
+                        <span class="label" style="margin-bottom: 1rem; display: block;">Jury Service</span>
+                        <div class="position-entry">
+                            <div class="position-date">Ongoing</div>
+                            <div class="position-details">
+                                <strong>Jury Member</strong>
+                                <span class="institution-text">Serving in numerous M.Sc. and Ph.D. thesis defenses across related fields.</span>
+                            </div>
+                        </div>
+                    `;
+                    supervisedBlock.insertAdjacentElement('afterend', juryBlock);
+                }
+            }
+        }
+
+        const labsSection = document.getElementById('labs');
+        if (labsSection) {
+            const labsTitle = labsSection.querySelector('.section-title h2');
+            const labsLabel = labsSection.querySelector('.section-title .label');
+            if (labsTitle) labsTitle.textContent = 'Labs / Working Groups';
+            if (labsLabel) labsLabel.textContent = 'Research Networks';
+
+            const labsGrid = labsSection.querySelector('.grid-2');
+            if (labsGrid && !labsGrid.querySelector('.mspace-card')) {
+                const mspaceCard = document.createElement('div');
+                mspaceCard.className = 'bento-card mspace-card';
+                mspaceCard.innerHTML = `
+                    <span class="label">CA24122 · Working Group</span>
+                    <h3>mSPACE <i>Action</i></h3>
+                    <p>Member of the "CA24122 - multiscale Stochastics, Patterns, and Analysis of Combinatorial Environments (mSPACE)" Action Working Group.</p>
+                    <p style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-dim);">Since April 2026</p>
+                `;
+                labsGrid.appendChild(mspaceCard);
+            }
+
+            const mspaceLabel = labsGrid.querySelector('.mspace-card .label');
+            if (mspaceLabel) {
+                mspaceLabel.textContent = 'CA24122 - Working Group';
+            }
+        }
+
+        const contactSection = document.getElementById('contact');
+        if (contactSection && !document.getElementById('news')) {
+            const newsItems = [
+                {
+                    source: 'Samsun University',
+                    meta: 'International Recognition',
+                    title: 'Accepted to the CA24122 mSPACE Action Working Group',
+                    summary: 'I was accepted to the CA24122 mSPACE Action Working Group, marking a new step in my international academic collaboration activities.',
+                    url: 'https://samsun.edu.tr/ogretim-uyemiz-dr-ogr-uyesi-doc-dr-kadir-donmezden-uluslararasi-calismalara-katki/',
+                    image: 'photos/news-previews/samsun-mspace.png'
+                },
+                {
+                    source: 'Samsun University',
+                    meta: 'Project Award',
+                    title: 'TUBITAK 1002 Project Awarded for UAV-Based Aircraft Damage Detection',
+                    summary: 'My project was accepted under the TUBITAK 1002 program, supporting research on UAV-assisted deep learning for aircraft damage detection.',
+                    url: 'https://samsun.edu.tr/doc-dr-kadir-donmezden-tubitak-proje-basarisi/',
+                    image: 'photos/news-previews/samsun-tubitak.png'
+                },
+                {
+                    source: 'LinkedIn',
+                    meta: 'Teaching Mobility',
+                    title: 'Erasmus+ Teaching Mobility Visit to UPC',
+                    summary: 'I visited UPC as part of an Erasmus+ teaching mobility program and contributed to academic exchange in air traffic management education.',
+                    url: 'https://www.linkedin.com/posts/kadir-d%C3%B6nmez-4b99b2174_erasmusplus-academiccollaboration-airtrafficmanagement-activity-7452704682860351488-QRZa?utm_source=share&utm_medium=member_desktop&rcm=ACoAAClwN00Bosdl-eYhYzagMpD7Pna8nQxQEsQ',
+                    image: 'photos/news-previews/linkedin-erasmus.png'
+                },
+                {
+                    source: 'LinkedIn',
+                    meta: 'Invited Speaker',
+                    title: 'Invited Speaker at TSI for International Civil Aviation Day',
+                    summary: 'I took part as an invited speaker at TSI during the International Civil Aviation Day program, sharing perspectives on aviation and air traffic management.',
+                    url: 'https://www.linkedin.com/posts/kadir-d%C3%B6nmez-4b99b2174_internationalcivilaviationday-aviation-atm-activity-7403830846853615616-7rLo?utm_source=share&utm_medium=member_desktop&rcm=ACoAAClwN00Bosdl-eYhYzagMpD7Pna8nQxQEsQ',
+                    image: 'photos/news-previews/linkedin-civil-aviation.png'
+                },
+                {
+                    source: 'LinkedIn',
+                    meta: 'Professional Training',
+                    title: 'UAV Training Delivered in Two Cities for the General Directorate of Forestry',
+                    summary: 'Within the IHA-1 Commercial UAV Pilot Course scope, I delivered training programs for the General Directorate of Forestry in two different cities.',
+                    url: 'https://www.linkedin.com/posts/kadir-d%C3%B6nmez-4b99b2174_i%CC%87ha-1-ticari-i%CC%87nsans%C4%B1z-hava-arac%C4%B1-pilotu-kurs-activity-7294688054672318464-cv3I?utm_source=share&utm_medium=member_desktop&rcm=ACoAAClwN00Bosdl-eYhYzagMpD7Pna8nQxQEsQ',
+                    image: 'photos/news-previews/linkedin-pilot-course.png'
+                },
+                {
+                    source: 'LinkedIn',
+                    meta: 'Conference Presentation',
+                    title: 'Presented a Poster at SESAR Innovation Days',
+                    summary: 'I participated in SESAR Innovation Days with a poster presentation focused on air traffic management research and innovation.',
+                    url: 'https://www.linkedin.com/posts/kadir-d%C3%B6nmez-4b99b2174_sesarinnovationdays-airtrafficmanagement-activity-7262490023206256641-lHVQ?utm_source=share&utm_medium=member_desktop&rcm=ACoAAClwN00Bosdl-eYhYzagMpD7Pna8nQxQEsQ',
+                    image: 'photos/news-previews/linkedin-sesar.png'
+                },
+                {
+                    source: 'LinkedIn',
+                    meta: 'Media Appearance',
+                    title: 'Joined TRT Trabzon Radio to Introduce Our Department',
+                    summary: 'I took part in a TRT Trabzon Radio program to share information about our department, its academic structure, and its educational focus.',
+                    url: 'https://www.linkedin.com/posts/kadir-d%C3%B6nmez-4b99b2174_uaexakbakaftmveonaraftm-aircraftmaintenance-activity-7198251772535046144-C38e?utm_source=share&utm_medium=member_desktop&rcm=ACoAAClwN00Bosdl-eYhYzagMpD7Pna8nQxQEsQ',
+                    image: 'photos/news-previews/linkedin-maintenance.png'
+                }
+            ];
+
+            const escapeHtml = (value) => String(value)
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#39;');
+
+            const renderNewsCard = (item) => `
+                <article class="bento-card news-compact-card">
+                    <div class="news-preview-shell">
+                        <img
+                            class="news-preview-image"
+                            src="${escapeHtml(item.image)}"
+                            alt="${escapeHtml(item.title)} preview"
+                            loading="lazy"
+                        >
+                    </div>
+                    <div class="news-card-top">
+                        <span class="news-source-pill">${escapeHtml(item.source)}</span>
+                        <span class="news-card-meta">${escapeHtml(item.meta)}</span>
+                    </div>
+                    <h3>${escapeHtml(item.title)}</h3>
+                    <p class="news-card-summary">${escapeHtml(item.summary)}</p>
+                    <a class="news-read-more" href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer">Read more</a>
+                </article>
+            `;
+
+            const newsSection = document.createElement('section');
+            newsSection.id = 'news';
+            newsSection.innerHTML = `
+                <div class="container">
+                    <div class="section-title">
+                        <h2>News From Me</h2>
+                        <div class="label">Recent Updates</div>
+                    </div>
+                    <div class="news-carousel-shell">
+                        <div class="news-carousel-hint">Scroll for more</div>
+                        <div class="news-carousel-track">
+                            <button class="news-carousel-arrow news-carousel-arrow-prev" type="button" aria-label="Scroll news left">&#8249;</button>
+                            <div class="news-embed-grid">
+                            ${newsItems.map(renderNewsCard).join('')}
+                            </div>
+                            <button class="news-carousel-arrow news-carousel-arrow-next" type="button" aria-label="Scroll news right">&#8250;</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            contactSection.parentNode.insertBefore(newsSection, contactSection);
+
+            const newsGrid = newsSection.querySelector('.news-embed-grid');
+            const prevArrow = newsSection.querySelector('.news-carousel-arrow-prev');
+            const nextArrow = newsSection.querySelector('.news-carousel-arrow-next');
+
+            if (newsGrid && prevArrow && nextArrow) {
+                const getScrollStep = () => {
+                    const firstCard = newsGrid.querySelector('.news-compact-card');
+                    const gridStyles = window.getComputedStyle(newsGrid);
+                    const gap = parseFloat(gridStyles.columnGap || gridStyles.gap || '0');
+                    return firstCard
+                        ? firstCard.getBoundingClientRect().width + gap
+                        : Math.max(newsGrid.clientWidth * 0.85, 280);
+                };
+
+                const updateNewsArrows = () => {
+                    const maxScrollLeft = Math.max(newsGrid.scrollWidth - newsGrid.clientWidth, 0);
+                    const hasOverflow = maxScrollLeft > 12;
+                    prevArrow.hidden = !hasOverflow;
+                    nextArrow.hidden = !hasOverflow;
+                    prevArrow.disabled = newsGrid.scrollLeft <= 12;
+                    nextArrow.disabled = newsGrid.scrollLeft >= maxScrollLeft - 12;
+                };
+
+                prevArrow.addEventListener('click', () => {
+                    newsGrid.scrollBy({ left: -getScrollStep(), behavior: 'smooth' });
+                });
+
+                nextArrow.addEventListener('click', () => {
+                    newsGrid.scrollBy({ left: getScrollStep(), behavior: 'smooth' });
+                });
+
+                newsGrid.addEventListener('scroll', updateNewsArrows, { passive: true });
+                window.addEventListener('resize', updateNewsArrows);
+                requestAnimationFrame(updateNewsArrows);
+            }
+        }
+    }
+    syncAcademicProfileContent();
+
+    // Project Funding Filters
+    function initProjectFilters() {
+        const projectSection = document.getElementById('projects');
+        const projectGrid = projectSection?.querySelector('.bento-grid');
+        const sectionTitle = projectSection?.querySelector('.section-title');
+        const cards = Array.from(projectGrid?.querySelectorAll('.bento-card') ?? []);
+
+        if (!projectSection || !projectGrid || !sectionTitle || cards.length === 0) {
+            return;
+        }
+
+        const inferGroup = (text) => {
+            const label = (text || '').toLowerCase();
+            if (label.includes('eu funded') || label.includes('atcosima')) return 'eu';
+            if (label.includes('university funded')) return 'university';
+            return 'tubitak';
+        };
+
+        const filterOptions = [
+            { key: 'tubitak', label: 'TUBITAK FUNDED' },
+            { key: 'eu', label: 'EU FUNDED' },
+            { key: 'university', label: 'UNIVERSITY FUNDED' }
+        ];
+
+        cards.forEach(card => {
+            const label = card.querySelector('.label')?.textContent || '';
+            card.classList.add('project-card');
+            card.dataset.projectGroup = inferGroup(label);
+        });
+
+        const filters = document.createElement('div');
+        filters.className = 'project-filters';
+        filters.setAttribute('role', 'tablist');
+        filters.setAttribute('aria-label', 'Project funding categories');
+
+        const buttons = filterOptions.map(option => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'project-filter';
+            button.dataset.projectFilter = option.key;
+            button.textContent = option.label;
+            button.setAttribute('aria-pressed', 'false');
+            filters.appendChild(button);
+            return button;
+        });
+
+        sectionTitle.insertAdjacentElement('afterend', filters);
+
+        const setFilter = (group) => {
+            buttons.forEach(button => {
+                const isActive = button.dataset.projectFilter === group;
+                button.classList.toggle('active', isActive);
+                button.setAttribute('aria-pressed', String(isActive));
+            });
+
+            cards.forEach(card => {
+                const matches = card.dataset.projectGroup === group;
+                card.classList.toggle('project-card-hidden', !matches);
+                card.setAttribute('aria-hidden', String(!matches));
+            });
+
+            projectGrid.dataset.activeProjectGroup = group;
+        };
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                setFilter(button.dataset.projectFilter);
+            });
+        });
+
+        setFilter('tubitak');
+    }
+    initProjectFilters();
+
     // Publication Tabs
     const pubTabs = document.querySelectorAll('.pub-tab');
     const pubPanels = document.querySelectorAll('.pub-panel');
+
+    const analysisTab = Array.from(pubTabs).find(tab => tab.dataset.target === 'analysis');
+    if (analysisTab?.parentElement) {
+        analysisTab.parentElement.prepend(analysisTab);
+    }
+
+    if (analysisTab) {
+        pubTabs.forEach(tab => tab.classList.remove('active'));
+        pubPanels.forEach(panel => panel.classList.remove('active'));
+        analysisTab.classList.add('active');
+        const analysisPanel = document.getElementById('analysis');
+        if (analysisPanel) {
+            analysisPanel.classList.add('active');
+        }
+        analysisTab.textContent = 'Analysis & Graphs';
+    }
 
     pubTabs.forEach(tab => {
         tab.addEventListener('click', () => {
@@ -152,9 +607,52 @@ document.addEventListener('DOMContentLoaded', () => {
         rootMargin: "0px 0px -50px 0px"
     });
 
-    document.querySelectorAll('section, .bento-card, .timeline-item, .pub-item').forEach(el => {
+    document.querySelectorAll('section, .bento-card, .timeline-item, .pub-item, .chart-card, .metric-card').forEach(el => {
         el.classList.add('reveal-on-scroll');
         revealObserver.observe(el);
+    });
+
+    // ---- Counter Animation (Citation Metrics) ----
+    function animateCounter(el, target, duration = 1500) {
+        const startTime = performance.now();
+        function step(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            el.textContent = Math.floor(eased * target);
+            if (progress < 1) requestAnimationFrame(step);
+            else el.textContent = target;
+        }
+        requestAnimationFrame(step);
+    }
+
+    const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const el = entry.target;
+                const targetVal = parseInt(el.textContent);
+                if (!isNaN(targetVal) && !el.dataset.animated) {
+                    el.dataset.animated = 'true';
+                    animateCounter(el, targetVal);
+                }
+                counterObserver.unobserve(el);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.metric-number, .footer-stat-number').forEach(el => {
+        counterObserver.observe(el);
+    });
+
+    // ---- Card Tilt / Shine Effect ----
+    document.querySelectorAll('.bento-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            card.style.setProperty('--mouse-x', x + '%');
+            card.style.setProperty('--mouse-y', y + '%');
+        });
     });
 
     // Smooth scroll
@@ -169,6 +667,74 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // ---- Biography Read More Toggle ----
+    window.toggleBio = function(btn) {
+        const moreContent = btn.previousElementSibling;
+        if (moreContent.style.display === 'none') {
+            moreContent.style.display = 'block';
+            btn.textContent = 'Read Less ▲';
+        } else {
+            moreContent.style.display = 'none';
+            btn.textContent = 'Read More ▼';
+            const card = btn.closest('.bento-card');
+            if (card) {
+                const rect = card.getBoundingClientRect();
+                if (rect.top < 0) {
+                    window.scrollBy({ top: rect.top - 100, behavior: 'smooth' });
+                }
+            }
+        }
+    };
+
+    // ---- Publications Discover More Toggle ----
+    function initPublicationsToggle() {
+        const panels = ['journals', 'proceedings'];
+        panels.forEach(panelId => {
+            const panel = document.getElementById(panelId);
+            if (!panel) return;
+            const items = panel.querySelectorAll('.pub-item');
+            let hasHidden = false;
+            
+            items.forEach(item => {
+                if (!item.querySelector('.selected-badge')) {
+                    item.classList.add('hidden-pub');
+                    hasHidden = true;
+                }
+            });
+
+            if (hasHidden) {
+                const btnContainer = document.createElement('div');
+                btnContainer.style.textAlign = 'center';
+                btnContainer.style.marginTop = '1.5rem';
+                
+                const btn = document.createElement('button');
+                btn.className = 'read-more-btn';
+                btn.textContent = 'Discover More ▼';
+                
+                btn.onclick = function() {
+                    const hiddenItems = panel.querySelectorAll('.hidden-pub, .revealed-pub');
+                    const isExpanding = btn.textContent.includes('Discover');
+                    
+                    hiddenItems.forEach(item => {
+                        if (isExpanding) {
+                            item.classList.remove('hidden-pub');
+                            item.classList.add('revealed-pub');
+                        } else {
+                            item.classList.add('hidden-pub');
+                            item.classList.remove('revealed-pub');
+                        }
+                    });
+                    
+                    btn.textContent = isExpanding ? 'Show Less ▲' : 'Discover More ▼';
+                };
+                
+                btnContainer.appendChild(btn);
+                panel.appendChild(btnContainer);
+            }
+        });
+    }
+    initPublicationsToggle();
 
     // =============================================
     // Analysis & Graphs — Chart.js Integration
@@ -763,6 +1329,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+
+    if (document.getElementById('analysis')?.classList.contains('active') && !chartsInitialized) {
+        setTimeout(renderAnalysisCharts, 120);
+    }
 
     // Re-render charts when theme changes
     if (themeBtn) {
