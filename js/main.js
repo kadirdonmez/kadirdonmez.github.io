@@ -408,6 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             src="${escapeHtml(item.image)}"
                             alt="${escapeHtml(item.title)} preview"
                             loading="lazy"
+                            onerror="this.style.display='none'"
                         >
                     </div>
                     <div class="news-card-top">
