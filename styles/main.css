@@ -1703,9 +1703,10 @@ section > .container {
     gap: 0.35rem;
     font-size: 0.72rem;
     font-weight: 700;
-    color: var(--gold);
-    background: var(--gold-soft);
-    border: 1px solid rgba(245,158,11,0.2);
+    color: #9a6b00;
+    background: linear-gradient(180deg, #fff9e6 0%, #ffefb5 100%);
+    border: 1px solid rgba(212,160,23,0.28);
+    box-shadow: 0 8px 18px rgba(212,160,23,0.12);
     padding: 0.2rem 0.6rem;
     border-radius: 999px;
     text-transform: uppercase;
@@ -1713,6 +1714,11 @@ section > .container {
     margin-bottom: 0.75rem;
 }
 .selected-badge::before { content: '★'; font-size: 0.8rem; }
+
+/* ============================================================
+   ANALYSIS & GRAPHS
+   ============================================================ */
+.selected-badge::before { content: '\2605'; font-size: 0.8rem; }
 
 /* ============================================================
    ANALYSIS & GRAPHS
