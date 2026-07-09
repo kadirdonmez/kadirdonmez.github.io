@@ -1,14 +1,14 @@
 // ============================================================
 // PREMIUM INTERACTIONS — Kadir Dönmez Academic Portfolio
-// Particles, Scroll Progress, Counters, Card Effects
+// Aircraft motion, Scroll Progress, Counters, Card Effects
 // ============================================================
 
-// ---- Hero Particle System ----
+// ---- Hero Aircraft System ----
 function initParticles() {
     const canvas = document.getElementById('hero-particles');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    let particles = [];
+    let aircraft = [];
     let animFrame;
 
     function resize() {
@@ -17,71 +17,97 @@ function initParticles() {
         canvas.height = hero.offsetHeight;
     }
 
-    function createParticle() {
+    function createAircraft(startOffscreen = false) {
+        const size = Math.random() * 9 + 11;
+        const speed = Math.random() * 0.35 + 0.22;
+        const angle = (Math.random() * 0.18) - 0.08;
+
         return {
-            x: Math.random() * canvas.width,
+            x: startOffscreen ? -80 - Math.random() * canvas.width : Math.random() * canvas.width,
             y: Math.random() * canvas.height,
-            size: Math.random() * 2 + 0.5,
-            speedX: (Math.random() - 0.5) * 0.3,
-            speedY: (Math.random() - 0.5) * 0.2 - 0.1,
-            opacity: Math.random() * 0.5 + 0.1,
-            pulse: Math.random() * Math.PI * 2,
-            pulseSpeed: Math.random() * 0.02 + 0.005
+            size,
+            speedX: speed,
+            speedY: (Math.random() - 0.5) * 0.08 - 0.03,
+            angle,
+            opacity: Math.random() * 0.32 + 0.18,
+            phase: Math.random() * Math.PI * 2,
+            phaseSpeed: Math.random() * 0.012 + 0.006,
+            trail: Math.random() * 24 + 54
         };
     }
 
     function init() {
         resize();
-        const count = Math.min(Math.floor(canvas.width * canvas.height / 12000), 80);
-        particles = [];
-        for (let i = 0; i < count; i++) particles.push(createParticle());
+        const count = Math.min(Math.max(Math.floor(canvas.width * canvas.height / 48000), 10), 24);
+        aircraft = [];
+        for (let i = 0; i < count; i++) aircraft.push(createAircraft());
+    }
+
+    function drawAircraftIcon(p, alpha) {
+        const wave = Math.sin(p.phase);
+        const rotation = p.angle + wave * 0.045;
+        const scale = p.size / 18;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(rotation);
+        ctx.scale(scale, scale);
+
+        ctx.beginPath();
+        ctx.moveTo(19, 0);
+        ctx.lineTo(-13, -7);
+        ctx.lineTo(-7, -1);
+        ctx.lineTo(-15, 4);
+        ctx.lineTo(-10, 7);
+        ctx.lineTo(-1, 2);
+        ctx.lineTo(19, 0);
+        ctx.closePath();
+        ctx.fillStyle = `rgba(37, 99, 235, ${alpha})`;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(-7, -1);
+        ctx.lineTo(-2, 2);
+        ctx.strokeStyle = `rgba(219, 234, 254, ${alpha * 0.75})`;
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        ctx.restore();
+    }
+
+    function drawTrail(p, alpha) {
+        const trailStartX = p.x - p.trail;
+        const trailY = p.y + 1;
+        const gradient = ctx.createLinearGradient(trailStartX, trailY, p.x - 12, p.y);
+        gradient.addColorStop(0, `rgba(79, 138, 247, 0)`);
+        gradient.addColorStop(1, `rgba(79, 138, 247, ${alpha * 0.22})`);
+
+        ctx.beginPath();
+        ctx.moveTo(trailStartX, trailY);
+        ctx.lineTo(p.x - 14, p.y);
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = Math.max(0.7, p.size / 18);
+        ctx.stroke();
     }
 
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        particles.forEach(p => {
+        aircraft.forEach(p => {
             p.x += p.speedX;
-            p.y += p.speedY;
-            p.pulse += p.pulseSpeed;
+            p.y += p.speedY + Math.sin(p.phase) * 0.035;
+            p.phase += p.phaseSpeed;
 
-            if (p.x < 0) p.x = canvas.width;
-            if (p.x > canvas.width) p.x = 0;
-            if (p.y < 0) p.y = canvas.height;
-            if (p.y > canvas.height) p.y = 0;
-
-            const glow = (Math.sin(p.pulse) + 1) / 2;
-            const alpha = p.opacity * (0.5 + glow * 0.5);
-
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(79, 138, 247, ${alpha})`;
-            ctx.fill();
-
-            if (p.size > 1.2) {
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(79, 138, 247, ${alpha * 0.08})`;
-                ctx.fill();
+            if (p.x > canvas.width + 80 || p.y < -60 || p.y > canvas.height + 60) {
+                Object.assign(p, createAircraft(true));
+                p.y = Math.random() * canvas.height;
             }
+
+            const shimmer = (Math.sin(p.phase) + 1) / 2;
+            const alpha = p.opacity * (0.78 + shimmer * 0.22);
+            drawTrail(p, alpha);
+            drawAircraftIcon(p, alpha);
         });
-
-        // Connecting lines
-        for (let i = 0; i < particles.length; i++) {
-            for (let j = i + 1; j < particles.length; j++) {
-                const dx = particles[i].x - particles[j].x;
-                const dy = particles[i].y - particles[j].y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 120) {
-                    ctx.beginPath();
-                    ctx.moveTo(particles[i].x, particles[i].y);
-                    ctx.lineTo(particles[j].x, particles[j].y);
-                    ctx.strokeStyle = `rgba(79, 138, 247, ${(1 - dist / 120) * 0.06})`;
-                    ctx.lineWidth = 0.5;
-                    ctx.stroke();
-                }
-            }
-        }
 
         animFrame = requestAnimationFrame(draw);
     }
@@ -114,6 +140,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuBtn = document.getElementById("menuBtn");
     const drawer = document.getElementById("drawer");
     const yearEl = document.getElementById("year");
+    const brandLabel = document.querySelector('.brand span');
+    const closeDrawerBtn = document.getElementById("closeDrawer");
+
+    if (brandLabel) {
+        brandLabel.textContent = 'KADIR DONMEZ';
+    }
+
+    if (menuBtn) {
+        menuBtn.innerHTML = '&#9776;';
+    }
+
+    if (closeDrawerBtn) {
+        closeDrawerBtn.innerHTML = '&#10005;';
+    }
+
+    document.querySelectorAll('a[href="#papers"]').forEach(link => {
+        link.textContent = 'Publications';
+    });
+
+    document.querySelectorAll('a[href="#labs"]').forEach(link => {
+        link.textContent = 'Labs & Groups';
+    });
 
     // Stagger Preparation (Ultra-Snappy)
     applyStagger('.bento-card', 15);
@@ -691,6 +739,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // ---- Publications Discover More Toggle ----
     function initPublicationsToggle() {
         const panels = ['journals', 'proceedings'];
+
+        const proceedingsPanel = document.getElementById('proceedings');
+        if (proceedingsPanel) {
+            proceedingsPanel.querySelectorAll('.pub-item').forEach(item => {
+                const text = item.querySelector('.pub-content p')?.textContent || '';
+                if (text.includes('Validating and modeling of metrics of micro turbojet engine by experimental and ML methods')) {
+                    item.querySelector('.selected-badge')?.remove();
+                }
+            });
+        }
+
         panels.forEach(panelId => {
             const panel = document.getElementById(panelId);
             if (!panel) return;
