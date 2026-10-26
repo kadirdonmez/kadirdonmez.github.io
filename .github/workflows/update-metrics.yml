@@ -1,0 +1,57 @@
+name: Update citation metrics
+
+# Refreshes data/metrics.json (Google Scholar, Web of Science, Scopus) once a
+# month. Run it by hand from the Actions tab with "Run workflow".
+on:
+  schedule:
+    - cron: "17 4 1 * *" # 04:17 UTC on the 1st of each month (07:17 Istanbul)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: update-metrics
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch metrics
+        env:
+          SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+          WOS_API_KEY: ${{ secrets.WOS_API_KEY }}
+          SCOPUS_API_KEY: ${{ secrets.SCOPUS_API_KEY }}
+          SCOPUS_INSTTOKEN: ${{ secrets.SCOPUS_INSTTOKEN }}
+        run: python scripts/update_metrics.py
+
+      - name: Commit updated metrics
+        id: commit
+        run: |
+          if git diff --quiet -- data/metrics.json; then
+            echo "No metric changes to commit."
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/metrics.json
+          git commit -m "Update citation metrics ($(date -u +%Y-%m))"
+          git push
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+
+      # Pushes made with GITHUB_TOKEN may not start a Pages rebuild on their own.
+      - name: Request a GitHub Pages rebuild
+        if: steps.commit.outputs.pushed == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds" || echo "Pages rebuild request skipped."

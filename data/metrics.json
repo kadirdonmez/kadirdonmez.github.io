@@ -1,0 +1,33 @@
+{
+  "updated": "2026-08-01",
+  "scholar": {
+    "citations": 417,
+    "h_index": 12,
+    "i10_index": 16,
+    "by_year": {
+      "2018": 6,
+      "2019": 6,
+      "2020": 12,
+      "2021": 22,
+      "2022": 38,
+      "2023": 51,
+      "2024": 63,
+      "2025": 103,
+      "2026": 91
+    },
+    "updated": "2026-08-01",
+    "source": "manual"
+  },
+  "scopus": {
+    "citations": 204,
+    "h_index": 9,
+    "updated": "2026-08-01",
+    "source": "manual"
+  },
+  "wos": {
+    "citations": 164,
+    "h_index": 7,
+    "updated": "2026-08-01",
+    "source": "manual"
+  }
+}
