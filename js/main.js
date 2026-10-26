@@ -385,6 +385,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const newsItems = [
                 {
                     source: 'Samsun University',
+                    meta: 'Project Award',
+                    title: 'TUBITAK 1501 Project Accepted for Drone-Based Damage Detection',
+                    summary: 'Our project on a drone-based damage detection platform for aircraft maintenance was accepted under the TUBITAK 1501 Industrial R&D Support Program.',
+                    url: 'https://samsun.edu.tr/ogretim-elemanlarimizdan-tubitak-proje-basarisi/',
+                    image: 'photos/news-previews/samsun-tubitak-1501.png'
+                },
+                {
+                    source: 'Samsun University',
                     meta: 'International Recognition',
                     title: 'Accepted to the CA24122 mSPACE Action Working Group',
                     summary: 'I was accepted to the CA24122 mSPACE Action Working Group, marking a new step in my international academic collaboration activities.',
@@ -1170,7 +1178,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 data: {
                     labels: ['TÜBİTAK', 'EU Funded', 'University Funded'],
                     datasets: [{
-                        data: [5, 1, 4],
+                        data: [6, 1, 4],
                         backgroundColor: [
                             'rgba(251,146,60,0.85)',    // Orange — TÜBİTAK
                             `rgba(${accentRGB}, 0.85)`, // Blue — EU
@@ -1210,6 +1218,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 type: 'bar',
                 data: {
                     labels: [
+                        'Drone Inspection (TÜBİTAK 1501)',
                         'ATCOSIMA (EU)',
                         'UAM (TÜBİTAK 1001)',
                         'UAV Deep Learning (1002)',
@@ -1222,8 +1231,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     ],
                     datasets: [{
                         label: 'Budget',
-                        data: [270000, 165000, 100000, 100000, 75000, 25000, 25000, 25000, 25000],
+                        data: [9939946, 270000, 165000, 100000, 100000, 75000, 25000, 25000, 25000, 25000],
                         backgroundColor: [
+                            'rgba(251,146,60,0.95)',
                             `rgba(${accentRGB}, 0.85)`,
                             'rgba(251,146,60,0.85)',
                             'rgba(251,146,60,0.70)',
@@ -1245,15 +1255,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     maintainAspectRatio: false,
                     scales: {
                         x: {
-                            beginAtZero: true,
+                            type: 'logarithmic',
+                            min: 10000,
+                            max: 10000000,
                             ticks: {
                                 color: C.textDim,
+                                autoSkip: false,
+                                maxRotation: 0,
                                 callback: function (value) {
+                                    const exp = Math.log10(value);
+                                    if (Math.abs(exp - Math.round(exp)) > 1e-9) return '';
+                                    if (value >= 1000000) return (value / 1000000).toFixed(0) + 'M';
                                     if (value >= 1000) return (value / 1000).toFixed(0) + 'K';
                                     return value;
                                 }
                             },
-                            grid: { color: C.border, drawBorder: false },
+                            grid: {
+                                color: function (ctx) {
+                                    const exp = Math.log10(ctx.tick?.value || 1);
+                                    return Math.abs(exp - Math.round(exp)) < 1e-9 ? C.border : 'transparent';
+                                },
+                                drawBorder: false
+                            },
                             border: { display: false }
                         },
                         y: {
@@ -1267,8 +1290,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         tooltip: {
                             callbacks: {
                                 label: function (ctx) {
-                                    const idx = ctx.dataIndex;
-                                    if (idx === 0) return ` Budget: €${ctx.parsed.x.toLocaleString()} EUR`;
+                                    if (ctx.label.includes('(EU)')) return ` Budget: €${ctx.parsed.x.toLocaleString()} EUR`;
                                     return ` Budget: ₺${ctx.parsed.x.toLocaleString()} TL`;
                                 }
                             }
@@ -1288,7 +1310,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 data: {
                     labels: ['PI', 'Researcher', 'Scholar', 'Expert'],
                     datasets: [{
-                        data: [1, 7, 1, 1],
+                        data: [1, 8, 1, 1],
                         backgroundColor: [
                             'rgba(139,92,246,0.85)',    // Violet — PI
                             `rgba(${accentRGB}, 0.85)`, // Blue — Researcher
