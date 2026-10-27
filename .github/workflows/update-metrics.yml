@@ -19,19 +19,16 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
+      # The script only needs the Python 3 that ships with the runner image.
       - name: Fetch metrics
         env:
           SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
           WOS_API_KEY: ${{ secrets.WOS_API_KEY }}
           SCOPUS_API_KEY: ${{ secrets.SCOPUS_API_KEY }}
           SCOPUS_INSTTOKEN: ${{ secrets.SCOPUS_INSTTOKEN }}
-        run: python scripts/update_metrics.py
+        run: python3 scripts/update_metrics.py
 
       - name: Commit updated metrics
         id: commit
