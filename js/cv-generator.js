@@ -654,7 +654,7 @@ async function buildAndDownloadPDF() {
         });
 
         // Ensure .cv-metrics-panel always fits on the same page as the last section
-        // rather than spilling onto an extra trailing page.
+        // with a clean 1-line gap above it, without spilling onto an extra trailing page.
         const metricsPanel = element.querySelector('.cv-metrics-panel');
         if (metricsPanel) {
             const prevEl = metricsPanel.previousElementSibling;
@@ -662,61 +662,54 @@ async function buildAndDownloadPDF() {
             const targetPageIdx = prevEl
                 ? Math.floor(Math.max(0, getBottomRel(prevEl) - 1) / pageHeightPx)
                 : Math.floor(Math.max(0, getBottomRel(metricsPanel) - 1) / pageHeightPx);
-            const targetPageLimit = (targetPageIdx + 1) * pageHeightPx - 14;
+            const targetPageMaxBottom = (targetPageIdx + 1) * pageHeightPx - 4;
             const pageStartPx = targetPageIdx * pageHeightPx;
 
-            if (getBottomRel(metricsPanel) > targetPageLimit || element.scrollHeight > (targetPageIdx + 1) * pageHeightPx) {
-                // Step 1: tighten section titles and rows on the last page
-                const lastPageTitles = Array.from(element.querySelectorAll('.section-title')).filter(
-                    (el) => (el.getBoundingClientRect().top - element.getBoundingClientRect().top) >= pageStartPx - 10
-                );
-                lastPageTitles.forEach((el) => {
+            // Keep a full 1-line blank space above Academic Metrics Snapshot
+            metricsPanel.style.marginTop = '18px';
+
+            const isOnLastPage = (el) => (el.getBoundingClientRect().top - element.getBoundingClientRect().top) >= pageStartPx - 16;
+
+            // Pass 1: reclaim up to 10px from the spacer at the top of the last page
+            if (getBottomRel(metricsPanel) > targetPageMaxBottom) {
+                const spacers = Array.from(element.querySelectorAll('.cv-page-spacer'));
+                const lastSpacer = spacers[spacers.length - 1];
+                if (lastSpacer) {
+                    const currentH = parseFloat(lastSpacer.style.height) || 0;
+                    if (currentH > 2) {
+                        lastSpacer.style.height = `${Math.max(2, currentH - 10)}px`;
+                    }
+                }
+            }
+
+            // Pass 2: tighten section titles and entry rows on the last page
+            if (getBottomRel(metricsPanel) > targetPageMaxBottom) {
+                Array.from(element.querySelectorAll('.section-title')).filter(isOnLastPage).forEach((el) => {
                     el.style.marginTop = '2.2mm';
-                    el.style.marginBottom = '0.6mm';
+                    el.style.marginBottom = '0.5mm';
                     el.style.paddingTop = '3px';
                     el.style.paddingBottom = '3px';
                 });
-
-                const lastPageRows = Array.from(element.querySelectorAll('.entry-row')).filter(
-                    (el) => (el.getBoundingClientRect().top - element.getBoundingClientRect().top) >= pageStartPx - 10
-                );
-                lastPageRows.forEach((el) => {
-                    el.style.marginBottom = '2px';
+                Array.from(element.querySelectorAll('.entry-row')).filter(isOnLastPage).forEach((el) => {
+                    el.style.marginBottom = '1.5px';
                 });
-
-                metricsPanel.style.marginTop = '16px';
                 metricsPanel.style.padding = '6px 8px';
             }
 
-            if (getBottomRel(metricsPanel) > targetPageLimit || element.scrollHeight > (targetPageIdx + 1) * pageHeightPx) {
-                // Step 2: if still slightly over, tighten global section spacing and recompute spacers
-                const spacers = Array.from(element.querySelectorAll('.cv-page-spacer'));
-                if (spacers.length > 0) {
-                    element.querySelectorAll('.cv-page-spacer').forEach((sp) => sp.remove());
-                    element.querySelectorAll('.section-title:not(.first-section-title)').forEach((el) => {
-                        el.style.marginTop = '3.2mm';
-                        el.style.marginBottom = '0.8mm';
-                    });
-                    element.querySelectorAll('.entry-row').forEach((el) => {
-                        el.style.marginBottom = '2.5px';
-                    });
-                    candidates.forEach((node) => {
-                        if (!node.isConnected || node.classList.contains('cv-page-spacer')) return;
-                        const elementTop = element.getBoundingClientRect().top;
-                        const rect = node.getBoundingClientRect();
-                        const height = Math.ceil(rect.height);
-                        if (height <= 0 || height >= pageHeightPx - pageSafetyPx) return;
-                        const top = rect.top - elementTop;
-                        const pageOffset = ((top % pageHeightPx) + pageHeightPx) % pageHeightPx;
-                        const bottomOffset = pageOffset + height;
-                        if (pageOffset > pageSafetyPx && bottomOffset > pageHeightPx - pageSafetyPx) {
-                            const spacer = document.createElement('div');
-                            spacer.className = 'cv-page-spacer';
-                            spacer.style.height = `${Math.ceil(pageHeightPx - pageOffset + pageSafetyPx)}px`;
-                            node.parentNode.insertBefore(spacer, node);
-                        }
-                    });
-                }
+            // Pass 3: if still slightly over, tighten line-height and section margins further on the last page
+            if (getBottomRel(metricsPanel) > targetPageMaxBottom) {
+                Array.from(element.querySelectorAll('.section-title')).filter(isOnLastPage).forEach((el) => {
+                    el.style.marginTop = '1.4mm';
+                    el.style.marginBottom = '0.3mm';
+                    el.style.paddingTop = '2px';
+                    el.style.paddingBottom = '2px';
+                    el.style.fontSize = '12.5px';
+                });
+                Array.from(element.querySelectorAll('.entry-row, .entry-title, .entry-inst, .entry-desc')).filter(isOnLastPage).forEach((el) => {
+                    el.style.lineHeight = '1.15';
+                    el.style.marginBottom = '1px';
+                    el.style.marginTop = '0px';
+                });
             }
         }
     };
@@ -772,7 +765,7 @@ async function buildAndDownloadPDF() {
         const pageHeightPx = pageWidthPx * (contentHeightMm / contentWidthMm);
         const metricsEl = element.querySelector('.cv-metrics-panel');
         const effectiveBottomPx = metricsEl
-            ? Math.ceil(metricsEl.getBoundingClientRect().bottom - element.getBoundingClientRect().top + 2)
+            ? Math.ceil(metricsEl.getBoundingClientRect().bottom - element.getBoundingClientRect().top)
             : Math.ceil(element.scrollHeight);
         const totalHeightPx = Math.min(Math.ceil(element.scrollHeight), effectiveBottomPx);
         const pageCount = Math.ceil(totalHeightPx / pageHeightPx);
