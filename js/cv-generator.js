@@ -448,7 +448,7 @@ async function buildAndDownloadPDF() {
             }).join('')}
 
             <!-- ACADEMIC METRICS (Final summary at bottom) -->
-            <div class="avoid-break cv-metrics-panel" style="width:100%; background:transparent; border:1px solid #e2e8f0; border-radius:6px; padding:8px 10px; margin-top: 8px;">
+            <div class="avoid-break cv-metrics-panel" style="width:100%; background:transparent; border:1px solid #e2e8f0; border-radius:6px; padding:8px 10px; margin-top: 18px;">
                 <div style="text-align:center; margin-bottom:6px;">
                     <div style="font-size:10.5px; font-weight:bold; color:#0f172a; text-transform:uppercase; letter-spacing:0.8px;">Academic Metrics Snapshot</div>
                     <div style="font-size:8.5px; color:#64748b;">Generated on ${generatedOnLabel} · Citation data as of ${escapeHtml(metricsAsOfLabel)} · Publication and project totals from current website</div>
@@ -684,7 +684,7 @@ async function buildAndDownloadPDF() {
                     el.style.marginBottom = '2px';
                 });
 
-                metricsPanel.style.marginTop = '5px';
+                metricsPanel.style.marginTop = '16px';
                 metricsPanel.style.padding = '6px 8px';
             }
 
