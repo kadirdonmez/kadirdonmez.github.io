@@ -453,12 +453,11 @@ async function buildAndDownloadPDF() {
                     <div style="font-size:11px; font-weight:bold; color:#0f172a; text-transform:uppercase; letter-spacing:0.8px;">Academic Metrics Snapshot</div>
                     <div style="font-size:9px; color:#64748b;">Generated on ${generatedOnLabel} · Citation data as of ${escapeHtml(metricsAsOfLabel)} · Publication and project totals from current website</div>
                 </div>
-                <div style="display:grid; grid-template-columns:repeat(7, minmax(0, 1fr)); gap:8px; align-items:start; text-align:center;">
+                <div style="display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:8px; align-items:start; text-align:center;">
                     ${citationMetrics.map((metric) => renderMetric(metric.value, `${metric.source} Citations`, metric.indices)).join('')}
                     ${renderMetric(totalPublications, 'Publications')}
                     ${renderMetric(projects.length, 'Projects')}
                     ${renderMetric(q1Count + q2Count, 'Q1/Q2 Papers')}
-                    ${renderMetric(books.length, 'Book Chapters')}
                 </div>
             </div>
         </div>
