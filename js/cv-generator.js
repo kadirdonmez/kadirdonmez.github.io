@@ -120,10 +120,10 @@ async function buildAndDownloadPDF() {
         </div>
     `).join('');
     const renderMetric = (value, label, sublabel = '') => `
-        <div style="padding: 4px 2px;">
-            <div style="font-size:16px;font-weight:bold;color:#ef4444;line-height:1.15;">${escapeHtml(value)}</div>
-            <div style="font-size:9px;font-weight:600;color:#475569;text-transform:uppercase;margin-top:2px;">${escapeHtml(label)}</div>
-            ${sublabel ? `<div style="font-size:8.5px;color:#64748b;margin-top:1px;">${escapeHtml(sublabel)}</div>` : ''}
+        <div style="padding: 2px 2px;">
+            <div style="font-size:14.5px;font-weight:bold;color:#ef4444;line-height:1.1;">${escapeHtml(value)}</div>
+            <div style="font-size:8.5px;font-weight:600;color:#475569;text-transform:uppercase;margin-top:2px;">${escapeHtml(label)}</div>
+            ${sublabel ? `<div style="font-size:8px;color:#64748b;margin-top:1px;">${escapeHtml(sublabel)}</div>` : ''}
         </div>
     `;
 
@@ -140,7 +140,7 @@ async function buildAndDownloadPDF() {
                 color: #1e293b;
                 line-height: 1.3;
                 font-size: 11px; 
-                padding: 10px 15px;
+                padding: 10px 15px 2px 15px;
                 background: white;
                 margin: 0;
             }
@@ -167,14 +167,14 @@ async function buildAndDownloadPDF() {
             #cv-print-container .cv-contact a { color: #3b82f6; text-decoration: none; display: inline-block; }
             
             #cv-print-container .section-title {
-                font-size: 14px;
+                font-size: 13.5px;
                 font-weight: bold;
                 color: #0f172a;
                 text-transform: uppercase;
                 border-left: 4px solid #93c5fd;
                 border-radius: 8px;
-                padding: 5px 10px;
-                margin: 6mm 0 1.2mm 0;
+                padding: 4px 10px;
+                margin: 4.2mm 0 1mm 0;
                 letter-spacing: 0.5px;
                 break-after: avoid-page;
                 page-break-after: avoid;
@@ -448,12 +448,12 @@ async function buildAndDownloadPDF() {
             }).join('')}
 
             <!-- ACADEMIC METRICS (Final summary at bottom) -->
-            <div class="avoid-break cv-metrics-panel" style="width:100%; background:transparent; border:1px solid #e2e8f0; border-radius:6px; padding:12px; margin-top: 14px;">
-                <div style="text-align:center; margin-bottom:10px;">
-                    <div style="font-size:11px; font-weight:bold; color:#0f172a; text-transform:uppercase; letter-spacing:0.8px;">Academic Metrics Snapshot</div>
-                    <div style="font-size:9px; color:#64748b;">Generated on ${generatedOnLabel} · Citation data as of ${escapeHtml(metricsAsOfLabel)} · Publication and project totals from current website</div>
+            <div class="avoid-break cv-metrics-panel" style="width:100%; background:transparent; border:1px solid #e2e8f0; border-radius:6px; padding:8px 10px; margin-top: 8px;">
+                <div style="text-align:center; margin-bottom:6px;">
+                    <div style="font-size:10.5px; font-weight:bold; color:#0f172a; text-transform:uppercase; letter-spacing:0.8px;">Academic Metrics Snapshot</div>
+                    <div style="font-size:8.5px; color:#64748b;">Generated on ${generatedOnLabel} · Citation data as of ${escapeHtml(metricsAsOfLabel)} · Publication and project totals from current website</div>
                 </div>
-                <div style="display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:8px; align-items:start; text-align:center;">
+                <div style="display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:6px; align-items:start; text-align:center;">
                     ${citationMetrics.map((metric) => renderMetric(metric.value, `${metric.source} Citations`, metric.indices)).join('')}
                     ${renderMetric(totalPublications, 'Publications')}
                     ${renderMetric(projects.length, 'Projects')}
@@ -630,8 +630,7 @@ async function buildAndDownloadPDF() {
             '.project-tail-keep',
             '.entry-row',
             '.pub-item',
-            '.pub-legend',
-            '.cv-metrics-panel'
+            '.pub-legend'
         ].join(',')));
 
         candidates.forEach((node) => {
@@ -653,6 +652,73 @@ async function buildAndDownloadPDF() {
                 node.parentNode.insertBefore(spacer, node);
             }
         });
+
+        // Ensure .cv-metrics-panel always fits on the same page as the last section
+        // rather than spilling onto an extra trailing page.
+        const metricsPanel = element.querySelector('.cv-metrics-panel');
+        if (metricsPanel) {
+            const prevEl = metricsPanel.previousElementSibling;
+            const getBottomRel = (el) => el.getBoundingClientRect().bottom - element.getBoundingClientRect().top;
+            const targetPageIdx = prevEl
+                ? Math.floor(Math.max(0, getBottomRel(prevEl) - 1) / pageHeightPx)
+                : Math.floor(Math.max(0, getBottomRel(metricsPanel) - 1) / pageHeightPx);
+            const targetPageLimit = (targetPageIdx + 1) * pageHeightPx - 14;
+            const pageStartPx = targetPageIdx * pageHeightPx;
+
+            if (getBottomRel(metricsPanel) > targetPageLimit || element.scrollHeight > (targetPageIdx + 1) * pageHeightPx) {
+                // Step 1: tighten section titles and rows on the last page
+                const lastPageTitles = Array.from(element.querySelectorAll('.section-title')).filter(
+                    (el) => (el.getBoundingClientRect().top - element.getBoundingClientRect().top) >= pageStartPx - 10
+                );
+                lastPageTitles.forEach((el) => {
+                    el.style.marginTop = '2.2mm';
+                    el.style.marginBottom = '0.6mm';
+                    el.style.paddingTop = '3px';
+                    el.style.paddingBottom = '3px';
+                });
+
+                const lastPageRows = Array.from(element.querySelectorAll('.entry-row')).filter(
+                    (el) => (el.getBoundingClientRect().top - element.getBoundingClientRect().top) >= pageStartPx - 10
+                );
+                lastPageRows.forEach((el) => {
+                    el.style.marginBottom = '2px';
+                });
+
+                metricsPanel.style.marginTop = '5px';
+                metricsPanel.style.padding = '6px 8px';
+            }
+
+            if (getBottomRel(metricsPanel) > targetPageLimit || element.scrollHeight > (targetPageIdx + 1) * pageHeightPx) {
+                // Step 2: if still slightly over, tighten global section spacing and recompute spacers
+                const spacers = Array.from(element.querySelectorAll('.cv-page-spacer'));
+                if (spacers.length > 0) {
+                    element.querySelectorAll('.cv-page-spacer').forEach((sp) => sp.remove());
+                    element.querySelectorAll('.section-title:not(.first-section-title)').forEach((el) => {
+                        el.style.marginTop = '3.2mm';
+                        el.style.marginBottom = '0.8mm';
+                    });
+                    element.querySelectorAll('.entry-row').forEach((el) => {
+                        el.style.marginBottom = '2.5px';
+                    });
+                    candidates.forEach((node) => {
+                        if (!node.isConnected || node.classList.contains('cv-page-spacer')) return;
+                        const elementTop = element.getBoundingClientRect().top;
+                        const rect = node.getBoundingClientRect();
+                        const height = Math.ceil(rect.height);
+                        if (height <= 0 || height >= pageHeightPx - pageSafetyPx) return;
+                        const top = rect.top - elementTop;
+                        const pageOffset = ((top % pageHeightPx) + pageHeightPx) % pageHeightPx;
+                        const bottomOffset = pageOffset + height;
+                        if (pageOffset > pageSafetyPx && bottomOffset > pageHeightPx - pageSafetyPx) {
+                            const spacer = document.createElement('div');
+                            spacer.className = 'cv-page-spacer';
+                            spacer.style.height = `${Math.ceil(pageHeightPx - pageOffset + pageSafetyPx)}px`;
+                            node.parentNode.insertBefore(spacer, node);
+                        }
+                    });
+                }
+            }
+        }
     };
 
     // Fonts and portraits must settle before measuring page boundaries.
@@ -704,7 +770,11 @@ async function buildAndDownloadPDF() {
         const contentHeightMm = pdfSettings.pageMm.height - pdfSettings.marginMm.top - pdfSettings.marginMm.bottom;
         const pageWidthPx = element.offsetWidth;
         const pageHeightPx = pageWidthPx * (contentHeightMm / contentWidthMm);
-        const totalHeightPx = Math.ceil(element.scrollHeight);
+        const metricsEl = element.querySelector('.cv-metrics-panel');
+        const effectiveBottomPx = metricsEl
+            ? Math.ceil(metricsEl.getBoundingClientRect().bottom - element.getBoundingClientRect().top + 2)
+            : Math.ceil(element.scrollHeight);
+        const totalHeightPx = Math.min(Math.ceil(element.scrollHeight), effectiveBottomPx);
         const pageCount = Math.ceil(totalHeightPx / pageHeightPx);
         const pdf = new jsPDFCtor({
             unit: 'mm',
