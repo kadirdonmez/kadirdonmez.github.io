@@ -310,7 +310,7 @@ async function buildAndDownloadPDF() {
                     <h2 class="cv-subtitle">Associate Professor</h2>
                     <div class="cv-contact">Samsun University — Özdemir Bayraktar Faculty of Aeronautics and Astronautics</div>
                     <div class="cv-contact">
-                        <a href="mailto:kadir.donmez@samsun.edu.tr">kadir.donmez@samsun.edu.tr</a> &nbsp;|&nbsp; +90 362 313 00 55 (Ext: 2104) &nbsp;|&nbsp; Samsun, Türkiye
+                        <a href="mailto:kadir.donmez@samsun.edu.tr">kadir.donmez@samsun.edu.tr</a> &nbsp;|&nbsp; Samsun, Türkiye
                     </div>
                     <div class="cv-contact" style="margin-top:4px;">
                         <span style="display:inline-block; margin-right: 15px;">ORCID: <a href="https://orcid.org/0000-0002-1236-0498">0000-0002-1236-0498</a></span> 
