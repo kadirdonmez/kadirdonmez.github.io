@@ -3023,3 +3023,20 @@ p.institution-text {
         align-items: flex-start;
     }
 }
+
+/* Scholarly Index recognition card */
+.news-ranking-preview {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 0.45rem;
+    padding: 1.25rem;
+    color: #fff;
+    background: linear-gradient(135deg, #102c51, #245c96);
+}
+.news-ranking-label { font-size: 0.65rem; letter-spacing: 0.12em; color: #c7ddf4; }
+.news-ranking-number { font-size: clamp(2.5rem, 4vw, 3.5rem); line-height: 1.1; }
+.news-ranking-number span { font-size: 0.7rem; letter-spacing: 0.1em; font-weight: 500; }
+.news-ranking-country { color: #ffe2a3; font-size: 1.1rem; font-weight: 600; }
+.news-ranking-field { font-size: 0.7rem; line-height: 1.35; color: #d6e6f5; }

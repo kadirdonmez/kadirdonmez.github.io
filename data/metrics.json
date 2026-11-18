@@ -1,7 +1,7 @@
 {
-  "updated": "2026-11-01",
+  "updated": "2026-11-18",
   "scholar": {
-    "citations": 444,
+    "citations": 446,
     "h_index": 13,
     "i10_index": 16,
     "by_year": {
@@ -13,21 +13,21 @@
       "2023": 53,
       "2024": 65,
       "2025": 104,
-      "2026": 119
+      "2026": 121
     },
-    "updated": "2026-11-01",
+    "updated": "2026-11-18",
     "source": "serpapi"
   },
   "scopus": {
-    "citations": 204,
+    "citations": 225,
     "h_index": 9,
-    "updated": "2026-08-01",
+    "updated": "2026-11-18",
     "source": "manual"
   },
   "wos": {
-    "citations": 164,
+    "citations": 181,
     "h_index": 7,
-    "updated": "2026-08-01",
+    "updated": "2026-11-18",
     "source": "manual"
   }
 }

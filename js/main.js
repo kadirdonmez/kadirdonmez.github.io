@@ -12,6 +12,14 @@ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 // ------------------------------------------------------------
 const NEWS_ITEMS = [
     {
+        source: 'LinkedIn',
+        meta: 'Research Recognition · 2026',
+        title: 'Scholarly Index 2026: World #55, Türkiye #1',
+        summary: 'In Aviation Industry Analysis and Trends, I ranked #55 worldwide and #1 in Türkiye. In Air Traffic Management and Optimization, I ranked #57 worldwide and #2 in Türkiye, based on the 2021–2025 impact window.',
+        url: 'https://lnkd.in/p/d4Fp32ge',
+        ranking: true
+    },
+    {
         source: 'Samsun University',
         meta: 'Project Award',
         title: 'TUBITAK 1501 Project Accepted for Drone-Based Damage Detection',
@@ -575,7 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function getCitationTrend() {
         const fallback = {
             labels: ['2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026*'],
-            values: [6, 6, 12, 22, 38, 51, 63, 103, 91]
+            values: [6, 8, 16, 23, 35, 53, 65, 104, 121]
         };
         const byYear = window.KD_METRICS?.scholar?.by_year;
         if (!byYear || typeof byYear !== 'object') return fallback;
@@ -1203,9 +1211,14 @@ function buildNewsSection() {
 
     const renderNewsCard = item => `
         <article class="bento-card news-compact-card">
-            <div class="news-preview-shell">
-                <img class="news-preview-image" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)} preview"
-                    loading="lazy" onerror="this.style.display='none'">
+            <div class="news-preview-shell${item.ranking ? ' news-ranking-preview' : ''}">
+                ${item.ranking ? `
+                    <span class="news-ranking-label">SCHOLARLY INDEX · 2026</span>
+                    <strong class="news-ranking-number">#55 <span>WORLD</span></strong>
+                    <span class="news-ranking-country">#1 in Türkiye</span>
+                    <span class="news-ranking-field">Aviation Industry Analysis and Trends</span>
+                ` : `<img class="news-preview-image" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)} preview"
+                    loading="lazy" onerror="this.style.display='none'">`}
             </div>
             <div class="news-card-top">
                 <span class="news-source-pill">${escapeHtml(item.source)}</span>
